@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+  }
+}
+
+/* A4 worksheet: pixel dimensions for screen (794px = 210mm @96dpi) */
+.worksheet-page {
+  width: 794px;
+  min-height: 1123px;
+  background: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 56px 68px;
+  box-sizing: border-box;
+  margin-bottom: 24px;
+}
+
+/* Print styles */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html, body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide the entire screen UI (header, main with scale transform) */
+  header,
+  main,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Show only the print container */
+  .print-container {
+    display: block !important;
+  }
+
+  /* Reset worksheet pages for print */
+  .worksheet-page {
+    width: 210mm !important;
+    min-height: 297mm !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 15mm 18mm !important;
+    page-break-after: always;
+    break-after: page;
+  }
+
+  .worksheet-page:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+}
+
+.construction-arc {
+  stroke-dasharray: 4 3;
+  stroke: #93c5fd;
+  fill: none;
+  stroke-width: 1;
+}
+
+.construction-line {
+  stroke-dasharray: 4 3;
+  stroke: #93c5fd;
+  fill: none;
+  stroke-width: 1;
+}
