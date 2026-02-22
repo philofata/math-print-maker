@@ -34,94 +34,106 @@ const NameFields: React.FC = () => (
 
 // ── Single problem card ───────────────────────────────────────────────────
 
-const ProblemCard: React.FC<{ problem: Problem; index: number }> = ({ problem, index }) => (
-  <div className="mb-6 pb-5 border-b border-slate-200 last:border-b-0">
-    <div className="flex gap-3">
-      {/* Problem number badge */}
-      <div
-        className="flex-shrink-0 w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm"
-        style={{ minWidth: '1.75rem' }}>
-        {index + 1}
-      </div>
-      <div className="flex-1">
-        {/* Problem title */}
-        <div className="text-xs font-bold text-indigo-600 mb-1 tracking-wide uppercase">
+const ProblemCard: React.FC<{ problem: Problem; index: number }> = ({ problem, index }) => {
+  const isConstruction = ['perpendicular_bisector', 'midpoint_construction'].includes(problem.id);
+  const subQuestions = problem.questionText.slice(1).filter(q => q.startsWith('('));
+
+  return (
+    <div className="mb-5 pb-4 border-b border-slate-200 last:border-b-0">
+      {/* Top row: number badge + title */}
+      <div className="flex items-center gap-2 mb-2">
+        <div
+          className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs"
+          style={{ minWidth: '1.5rem' }}>
+          {index + 1}
+        </div>
+        <div className="text-xs font-bold text-indigo-600 tracking-wide">
           {problem.title}
         </div>
-        {/* Question text */}
-        <div className="text-sm text-slate-800 leading-relaxed mb-3">
-          {problem.questionText.map((line, i) => (
-            <div key={i} className={i === 0 ? 'font-medium' : 'text-slate-600'}>
-              {line}
-            </div>
-          ))}
-        </div>
-        {/* Answer boxes for non-construction problems */}
-        {!['perpendicular_bisector', 'midpoint_construction'].includes(problem.id) && (
-          <div className="space-y-1 mb-2">
-            {problem.questionText.slice(1).filter(q => q.startsWith('(')).map((_, i) => (
-              <div key={i} className="flex items-center gap-2 text-sm">
-                <span className="text-slate-600 text-xs">({i + 1})の答え：</span>
-                <div className="border-b-2 border-slate-400 w-32 h-5" />
+      </div>
+
+      {/* Content: text left, figure right */}
+      <div className="flex gap-4 items-start ml-8">
+        <div className="flex-1 min-w-0">
+          {/* Question text */}
+          <div className="text-sm text-slate-800 leading-relaxed mb-2">
+            {problem.questionText.map((line, i) => (
+              <div key={i} className={i === 0 ? 'font-medium' : 'text-slate-600 mt-0.5'}>
+                {line}
               </div>
             ))}
           </div>
-        )}
+          {/* Answer lines */}
+          {!isConstruction && subQuestions.length > 0 && (
+            <div className="space-y-1.5 mt-2">
+              {subQuestions.map((_, i) => (
+                <div key={i} className="flex items-center gap-1.5 text-sm">
+                  <span className="text-slate-500 text-xs whitespace-nowrap">({i + 1})の答え：</span>
+                  <div className="border-b border-slate-400 flex-1" style={{ height: '1.25rem' }} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Figure */}
-        <div className="mt-2 flex justify-center">
-          <div className="border border-slate-200 rounded-lg p-2 bg-slate-50 inline-block">
-            <ProblemFigure problem={problem} isAnswer={false} />
-          </div>
+        <div className="flex-shrink-0 border border-slate-200 rounded-lg bg-slate-50 p-1.5">
+          <ProblemFigure problem={problem} isAnswer={false} />
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // ── Answer card ───────────────────────────────────────────────────────────
 
 const AnswerCard: React.FC<{ problem: Problem; index: number }> = ({ problem, index }) => (
-  <div className="mb-5 pb-4 border-b border-slate-200 last:border-b-0">
-    <div className="flex gap-3">
+  <div className="mb-4 pb-3 border-b border-slate-200 last:border-b-0">
+    {/* Header row */}
+    <div className="flex items-center gap-2 mb-2">
       <div
-        className="flex-shrink-0 w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm"
-        style={{ minWidth: '1.75rem' }}>
+        className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs"
+        style={{ minWidth: '1.5rem' }}>
         {index + 1}
       </div>
-      <div className="flex-1">
-        <div className="text-xs font-bold text-emerald-600 mb-1 tracking-wide">
-          {problem.title}
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          {/* Answer */}
-          <div>
-            <div className="text-xs font-bold text-slate-500 mb-1 bg-slate-100 px-2 py-0.5 rounded inline-block">解答</div>
-            <div className="text-sm text-slate-800 space-y-0.5">
-              {problem.answerText.map((line, i) => (
-                <div key={i} className={`leading-snug ${line.startsWith('•') ? 'text-slate-600 text-xs' : 'font-medium text-indigo-700'}`}>
-                  {line}
-                </div>
-              ))}
-            </div>
-            <div className="mt-2 flex justify-center">
-              <div className="border border-emerald-200 rounded-lg p-1 bg-emerald-50 inline-block">
-                <ProblemFigure problem={problem} isAnswer={true} />
+      <div className="text-xs font-bold text-emerald-600 tracking-wide">{problem.title}</div>
+    </div>
+
+    {/* Body: figure | answer+explanation */}
+    <div className="flex gap-3 ml-8 items-start">
+      {/* Figure */}
+      <div className="flex-shrink-0 border border-emerald-200 rounded-lg bg-emerald-50 p-1">
+        <ProblemFigure problem={problem} isAnswer={true} />
+      </div>
+
+      {/* Text */}
+      <div className="flex-1 min-w-0 grid grid-cols-2 gap-3">
+        {/* Answer */}
+        <div>
+          <div className="text-xs font-bold text-slate-500 mb-1 bg-slate-100 px-2 py-0.5 rounded inline-block">解答</div>
+          <div className="text-xs text-slate-800 space-y-0.5">
+            {problem.answerText.map((line, i) => (
+              <div key={i} className={`leading-snug ${line.startsWith('•') ? 'text-slate-500' : 'font-semibold text-indigo-700'}`}>
+                {line}
               </div>
-            </div>
+            ))}
           </div>
-          {/* Explanation */}
-          <div>
-            <div className="text-xs font-bold text-slate-500 mb-1 bg-amber-50 px-2 py-0.5 rounded inline-block text-amber-700">
-              超わかりやすい解説
-            </div>
-            <div className="text-xs text-slate-700 space-y-1 leading-relaxed">
-              {problem.explanationText.map((line, i) => (
-                <div key={i} className={line.startsWith('①') || line.startsWith('②') || line.startsWith('③') || line.startsWith('④') ?
-                  'text-indigo-700 font-medium' : 'text-slate-600'}>
-                  {line}
-                </div>
-              ))}
-            </div>
+        </div>
+        {/* Explanation */}
+        <div>
+          <div className="text-xs font-bold text-amber-700 mb-1 bg-amber-50 px-2 py-0.5 rounded inline-block">
+            超わかりやすい解説
+          </div>
+          <div className="text-xs text-slate-700 space-y-0.5 leading-relaxed">
+            {problem.explanationText.map((line, i) => (
+              <div key={i} className={
+                line.startsWith('①') || line.startsWith('②') || line.startsWith('③') || line.startsWith('④')
+                  ? 'text-indigo-700 font-medium'
+                  : 'text-slate-600'
+              }>
+                {line}
+              </div>
+            ))}
           </div>
         </div>
       </div>

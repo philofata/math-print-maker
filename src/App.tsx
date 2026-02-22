@@ -110,12 +110,14 @@ const App: React.FC = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
 
-  // Responsive scaling
+  const A4_W = 794;  // px (210mm @96dpi)
+  const A4_H = 1123; // px (297mm @96dpi)
+
+  // Responsive scaling: fit A4 width into the viewport
   const updateScale = useCallback(() => {
-    if (!wrapperRef.current) return;
-    const containerWidth = wrapperRef.current.offsetWidth - 32; // padding
-    const a4Width = 794; // 210mm in px at 96dpi
-    const newScale = Math.min(1, containerWidth / a4Width);
+    const vw = window.innerWidth;
+    const available = vw - 32; // 16px padding each side
+    const newScale = Math.min(1, available / A4_W);
     setScale(newScale);
   }, []);
 
@@ -137,12 +139,13 @@ const App: React.FC = () => {
     window.print();
   };
 
-  // Calculate scaled height to prevent overlap
-  const a4HeightPx = 297 * (96 / 25.4); // ~1123px per page
-  const scaledHeight = a4HeightPx * 2 * scale + 48; // 2 pages + margin
+  // After scale(), the rendered box is still 794px wide but visually narrower.
+  // We shrink the outer container to match the visual footprint so there's no gap.
+  const scaledW = A4_W * scale;
+  const scaledH = (A4_H * 2 + 24) * scale; // 2 pages + 24px gap between them
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-100">
       {/* ── Header ── */}
       <header className="no-print sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
@@ -187,17 +190,21 @@ const App: React.FC = () => {
       </header>
 
       {/* ── Worksheet area ── */}
-      <main className="no-print px-4 py-8" ref={wrapperRef}>
-        <div
-          className="worksheet-wrapper mx-auto"
-          style={{ height: `${scaledHeight}px` }}>
+      <main className="no-print py-8 flex justify-center" ref={wrapperRef}>
+        {/*
+          Outer div: exact visual size after scaling (so no extra whitespace).
+          Inner div: actual 794px wide, scaled from top-left corner.
+        */}
+        <div style={{ width: scaledW, height: scaledH, position: 'relative' }}>
           <div
             ref={sheetRef}
-            className="worksheet-scaler"
             style={{
+              width: A4_W,
+              transformOrigin: 'top left',
               transform: `scale(${scale})`,
-              transformOrigin: 'top center',
-              width: '794px', // 210mm at 96dpi
+              position: 'absolute',
+              top: 0,
+              left: 0,
             }}>
             <Worksheet problems={problems} />
           </div>
