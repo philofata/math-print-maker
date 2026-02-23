@@ -2,7 +2,7 @@
 // SVG figure components for all problem types
 
 import React from 'react';
-import { Problem } from './mathGenerator';
+import { Problem } from './types';
 
 interface FigureProps {
   problem: Problem;

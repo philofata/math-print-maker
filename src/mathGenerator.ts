@@ -1,32 +1,24 @@
 // mathGenerator.ts
 // Problem data generator — 9 patterns (A〜I) + original 5 patterns
 
+import { Problem } from './types';
+export type { Problem };
+
 export type ProblemType =
-  // 既存パターン
   | 'perpendicular_bisector'
   | 'parallel_translation'
   | 'rotation'
   | 'symmetric'
   | 'midpoint_construction'
-  // 新規パターン A〜I
-  | 'parallel_coord'        // A: 平行移動の座標
-  | 'rotation_angle'        // B: 回転角度を読む
-  | 'sector_arc_area'       // C: おうぎ形の弧・面積
-  | 'sector_angle_reverse'  // D: おうぎ形の中心角逆算
-  | 'skew_lines'            // E: ねじれの位置
-  | 'polyhedra_knowledge'   // F: 正多面体の知識
-  | 'prism_volume'          // G: 柱の表面積・体積
-  | 'cone_volume'           // H: 錐の表面積・体積
-  | 'sphere_volume';        // I: 球の表面積・体積
-
-export interface Problem {
-  id: ProblemType;
-  title: string;
-  questionText: string[];
-  answerText: string[];
-  explanationText: string[];
-  figureParams: Record<string, unknown>;
-}
+  | 'parallel_coord'
+  | 'rotation_angle'
+  | 'sector_arc_area'
+  | 'sector_angle_reverse'
+  | 'skew_lines'
+  | 'polyhedra_knowledge'
+  | 'prism_volume'
+  | 'cone_volume'
+  | 'sphere_volume';
 
 function pickFrom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -40,6 +32,7 @@ function generatePerpendicularBisector(): Problem {
   const lengthLabel = pickFrom(['6cm', '8cm', '10cm', '7cm', '9cm']);
   return {
     id: 'perpendicular_bisector',
+    subject: 'math' as const,
     title: '垂直二等分線の作図',
     questionText: [
       `右の図の線分ABの垂直二等分線を作図しなさい。`,
@@ -72,6 +65,7 @@ function generateParallelTranslation(): Problem {
   const [targetSeg, parallelSeg] = pickFrom(labelPairs);
   return {
     id: 'parallel_translation',
+    subject: 'math' as const,
     title: '平行移動',
     questionText: [
       '右の図の△ABCを、矢印KLの方向に矢印の長さだけ平行移動した△PQRについて、次の問いに答えなさい。',
@@ -98,6 +92,7 @@ function generateRotation(): Problem {
   const dir = pickFrom(['反時計回り', '時計回り']);
   return {
     id: 'rotation',
+    subject: 'math' as const,
     title: '回転移動',
     questionText: [
       `右の図の△ABCを、点Oを中心として${dir}に${angle}°回転移動した△PQRについて、次の問いに答えなさい。`,
@@ -126,6 +121,7 @@ function generateSymmetric(): Problem {
   const targetPair = pickFrom(['AP', 'BQ', 'CR'] as const);
   return {
     id: 'symmetric',
+    subject: 'math' as const,
     title: '対称移動',
     questionText: [
       '右の図の△ABCを、直線ℓを対称軸として対称移動した△PQRについて、次の問いに答えなさい。',
@@ -153,6 +149,7 @@ function generateMidpointConstruction(): Problem {
   const midLabel = sideLabel === 'BC' ? 'M' : sideLabel === 'AC' ? 'N' : 'L';
   return {
     id: 'midpoint_construction',
+    subject: 'math' as const,
     title: '辺の中点の作図',
     questionText: [
       `右の図の△ABCについて、辺${sideLabel}の中点${midLabel}を、定規とコンパスを用いて作図しなさい。`,
@@ -192,6 +189,7 @@ function generateParallelCoord(): Problem {
   const px = ax + right, py = ay + down;
   return {
     id: 'parallel_coord',
+    subject: 'math' as const,
     title: '平行移動と座標',
     questionText: [
       `右の方眼上の△ABCを、右に${right}マス、下に${down}マス平行移動して△PQRを作りました。`,
@@ -225,6 +223,7 @@ function generateRotationAngle(): Problem {
   const dir = pickFrom(['反時計回り', '時計回り']);
   return {
     id: 'rotation_angle',
+    subject: 'math' as const,
     title: '回転移動の角度',
     questionText: [
       '右の図は、△ABCを点Oを中心に回転移動して△PQRを得たものです。',
@@ -267,6 +266,7 @@ function generateSectorArcArea(): Problem {
   const areaStr = sd === 1 ? `${sn}π cm²` : `${sn}/${sd}π cm²`;
   return {
     id: 'sector_arc_area',
+    subject: 'math' as const,
     title: 'おうぎ形の弧と面積',
     questionText: [
       `半径 ${r}cm、中心角 ${a}° のおうぎ形について、次を求めなさい（円周率はπとする）。`,
@@ -304,6 +304,7 @@ function generateSectorAngleReverse(): Problem {
   const arcStr = ad === 1 ? `${an}π` : `${an}/${ad}π`;
   return {
     id: 'sector_angle_reverse',
+    subject: 'math' as const,
     title: 'おうぎ形の中心角',
     questionText: [
       `半径 ${r}cm のおうぎ形の弧の長さが ${arcStr}cm のとき、中心角を求めなさい。`,
@@ -338,6 +339,7 @@ function generateSkewLines(): Problem {
   const skewEdges = skewMap[target];
   return {
     id: 'skew_lines',
+    subject: 'math' as const,
     title: 'ねじれの位置',
     questionText: [
       '右の図は直方体ABCD-EFGHです。次の問いに答えなさい。',
@@ -423,6 +425,7 @@ function generatePolyhedraKnowledge(): Problem {
   const chosen = pickFrom(qsets);
   return {
     id: 'polyhedra_knowledge',
+    subject: 'math' as const,
     title: '正多面体',
     questionText: [chosen.q],
     answerText: chosen.a,
@@ -443,6 +446,7 @@ function generatePrismVolume(): Problem {
     const volume = `π×${r}²×${h} ＝ ${r * r * h}π cm³`;
     return {
       id: 'prism_volume',
+    subject: 'math' as const,
       title: '円柱の表面積と体積',
       questionText: [
         `底面の半径が${r}cm、高さが${h}cmの円柱について、次を求めなさい（円周率はπとする）。`,
@@ -471,6 +475,7 @@ function generatePrismVolume(): Problem {
     const vol = a * b * h;
     return {
       id: 'prism_volume',
+    subject: 'math' as const,
       title: '直方体の表面積と体積',
       questionText: [
         `縦${a}cm、横${b}cm、高さ${h}cmの直方体について、次を求めなさい。`,
@@ -510,6 +515,7 @@ function generateConeVolume(): Problem {
   const volSimple = volNum % 3 === 0 ? `${volNum / 3}π cm³` : `${volNum}/3 π cm³`;
   return {
     id: 'cone_volume',
+    subject: 'math' as const,
     title: '円錐の表面積と体積',
     questionText: [
       `底面の半径が${r}cm、高さが${h}cm、母線の長さが${l}cmの円錐について、次を求めなさい（π使用）。`,
@@ -542,6 +548,7 @@ function generateSphereVolume(): Problem {
   const volSimple = volNum % 3 === 0 ? `${volNum / 3}π cm³` : `${volNum}/3 π cm³`;
   return {
     id: 'sphere_volume',
+    subject: 'math' as const,
     title: '球の表面積と体積',
     questionText: [
       `半径${r}cmの球について、次を求めなさい（π使用）。`,
